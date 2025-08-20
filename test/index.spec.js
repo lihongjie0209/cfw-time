@@ -3,7 +3,7 @@ import { describe, it, expect } from 'vitest';
 import worker from '../src';
 
 describe('Time Zone API', () => {
-	it('should return usage information when no timezone is provided (unit style)', async () => {
+	it('should return Shanghai time when no timezone is provided (unit style)', async () => {
 		const request = new Request('http://example.com');
 		const ctx = createExecutionContext();
 		const response = await worker.fetch(request, env, ctx);
@@ -11,8 +11,12 @@ describe('Time Zone API', () => {
 		
 		const data = await response.json();
 		expect(response.status).toBe(200);
-		expect(data.message).toBe('Time Zone API');
-		expect(data.usage).toBeDefined();
+		expect(data['Asia/Shanghai']).toBeDefined();
+		expect(data['Asia/Shanghai'].formatted).toBeDefined();
+		expect(data['Asia/Shanghai'].iso).toBeDefined();
+		expect(data['Asia/Shanghai'].timestamp).toBeDefined();
+		expect(data._info).toBeDefined();
+		expect(data._info.message).toBe('Time Zone API - Default timezone: Asia/Shanghai');
 	});
 
 	it('should return time for a single timezone via GET (unit style)', async () => {
@@ -99,13 +103,15 @@ describe('Time Zone API', () => {
 	});
 
 	// Integration style tests
-	it('should return usage information when no timezone is provided (integration style)', async () => {
+	it('should return Shanghai time when no timezone is provided (integration style)', async () => {
 		const response = await SELF.fetch('http://example.com');
 		const data = await response.json();
 		
 		expect(response.status).toBe(200);
-		expect(data.message).toBe('Time Zone API');
-		expect(data.usage).toBeDefined();
+		expect(data['Asia/Shanghai']).toBeDefined();
+		expect(data['Asia/Shanghai'].formatted).toBeDefined();
+		expect(data._info).toBeDefined();
+		expect(data._info.message).toBe('Time Zone API - Default timezone: Asia/Shanghai');
 	});
 
 	it('should return time for multiple timezones (integration style)', async () => {

@@ -53,26 +53,20 @@ export default {
 				}
 			}
 
-			// If no timezones provided, return usage information
+			// If no timezones provided, use default timezone (Shanghai) and return time with usage information
 			if (timezones.length === 0) {
-				return new Response(JSON.stringify({
-					message: 'Time Zone API',
-					usage: {
-						get: '/?timezone=America/New_York or /?timezone=Asia/Shanghai,Europe/London',
-						post: 'POST with JSON: {"timezones": ["America/New_York", "Asia/Shanghai"]}'
-					},
-					examples: [
-						'/?timezone=Asia/Shanghai',
-						'/?timezone=America/New_York,Europe/London,Asia/Tokyo'
-					]
-				}), {
-					headers: { 'Content-Type': 'application/json', ...corsHeaders }
-				});
+				timezones = ['Asia/Shanghai']; // Default timezone
 			}
 
 			// Get current time for each timezone
 			const result = {};
 			const now = new Date();
+			let isDefaultTimezone = false;
+
+			// Check if we're using default timezone (no parameters provided)
+			if (request.method === 'GET' && !url.searchParams.get('timezone')) {
+				isDefaultTimezone = true;
+			}
 
 			for (const timezone of timezones) {
 				try {
@@ -103,6 +97,21 @@ export default {
 						message: `"${timezone}" is not a valid IANA timezone identifier`
 					};
 				}
+			}
+
+			// Add usage information if using default timezone
+			if (isDefaultTimezone) {
+				result._info = {
+					message: 'Time Zone API - Default timezone: Asia/Shanghai',
+					usage: {
+						get: '/?timezone=America/New_York or /?timezone=Asia/Shanghai,Europe/London',
+						post: 'POST with JSON: {"timezones": ["America/New_York", "Asia/Shanghai"]}'
+					},
+					examples: [
+						'/?timezone=Asia/Shanghai',
+						'/?timezone=America/New_York,Europe/London,Asia/Tokyo'
+					]
+				};
 			}
 
 			return new Response(JSON.stringify(result, null, 2), {

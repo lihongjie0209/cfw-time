@@ -5,6 +5,7 @@
 ## 功能特点
 
 - 支持单个或多个时区查询
+- **默认时区为上海 (Asia/Shanghai)**
 - 支持 GET 和 POST 请求方式
 - 返回 JSON 格式的时间数据
 - 支持 CORS 跨域请求
@@ -12,6 +13,37 @@
 - 使用标准的 IANA 时区标识符
 
 ## API 使用方法
+
+### 0. 默认时区 - 上海时间
+
+不提供任何参数时，默认返回上海时区的时间：
+
+```bash
+curl "http://127.0.0.1:8787/"
+```
+
+返回：
+```json
+{
+  "Asia/Shanghai": {
+    "formatted": "08/20/2025, 11:30:00",
+    "iso": "2025-08-20 11:30:00",
+    "timestamp": 1724128200000,
+    "timezone": "Asia/Shanghai"
+  },
+  "_info": {
+    "message": "Time Zone API - Default timezone: Asia/Shanghai",
+    "usage": {
+      "get": "/?timezone=America/New_York or /?timezone=Asia/Shanghai,Europe/London",
+      "post": "POST with JSON: {\"timezones\": [\"America/New_York\", \"Asia/Shanghai\"]}"
+    },
+    "examples": [
+      "/?timezone=Asia/Shanghai",
+      "/?timezone=America/New_York,Europe/London,Asia/Tokyo"
+    ]
+  }
+}
+```
 
 ### 1. GET 请求 - 单个时区
 
@@ -71,13 +103,11 @@ curl -X POST "http://127.0.0.1:8787/" \
   }'
 ```
 
-### 4. 获取使用说明
+### 4. 获取使用说明（已弃用）
 
-直接访问根路径不带任何参数：
+**注意：现在直接访问根路径会返回上海时区的默认时间，而不是纯使用说明。**
 
-```bash
-curl "http://127.0.0.1:8787/"
-```
+原来的纯使用说明功能已被默认时区功能替代。如需查看使用说明，请查看返回数据中的 `_info` 字段。
 
 ## 返回数据格式
 
